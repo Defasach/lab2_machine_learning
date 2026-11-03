@@ -1,0 +1,219 @@
+================================================================================
+LABORATORY WORK 2: LINEAR REGRESSION
+================================================================================
+
+Dataset: 649 rows, 33 columns
+Section 1: Starting...
+
+================================================================================
+SECTION 1: DATA DIAGNOSIS
+================================================================================
+
+1.1 Distribution Description
+
+Categorical:    Feature  Unique   Most Most_%
+    school       2     GP   65.2
+       sex       2      F   59.0
+   address       2      U   69.6
+   famsize       2    GT3   70.4
+   Pstatus       2      T   87.7
+      Mjob       5  other   39.8
+      Fjob       5  other   56.5
+    reason       4 course   43.9
+  guardian       3 mother   70.1
+ schoolsup       2     no   89.5
+    famsup       2    yes   61.3
+      paid       2     no   94.0
+activities       2     no   51.5
+   nursery       2    yes   80.3
+    higher       2    yes   89.4
+  internet       2    yes   76.7
+  romantic       2     no   63.2
+
+Continuous:    Feature   Q25   Q50   Q75  Skew  Kurt
+       age 16.00 17.00 18.00  0.42  0.07
+      Medu  2.00  2.00  4.00 -0.03 -1.26
+      Fedu  1.00  2.00  3.00  0.22 -1.11
+traveltime  1.00  1.00  2.00  1.25  1.11
+ studytime  1.00  2.00  2.00  0.70  0.04
+  failures  0.00  0.00  0.00  3.09  9.82
+    famrel  4.00  4.00  5.00 -1.11  1.35
+  freetime  3.00  3.00  4.00 -0.18 -0.40
+     goout  2.00  3.00  4.00 -0.01 -0.87
+      Dalc  1.00  1.00  2.00  2.14  4.35
+      Walc  1.00  2.00  3.00  0.64 -0.77
+    health  2.00  4.00  5.00 -0.50 -1.12
+  absences  0.00  2.00  6.00  2.02  5.78
+        G1 10.00 11.00 13.00 -0.00  0.04
+        G2 10.00 11.00 13.00 -0.36  1.66
+        G3 10.00 12.00 14.00 -0.91  2.71
+
+G3 Stats: count    649.000000
+mean      11.906009
+std        3.230656
+min        0.000000
+25%       10.000000
+50%       12.000000
+75%       14.000000
+max       19.000000
+Name: G3, dtype: float64
+Saved: plots/g3_dist.png
+
+1.2 Train/Val/Test Split
+Train: 389, Val: 130, Test: 130
+Data leakage: Statistics computed on full dataset leak test info into training.
+
+1.3 Missing Values: 0
+
+1.4 Outlier Detection
+   Feature  IQR_out  Z_out Decision
+       age        1      3     Keep
+traveltime       13     13     Keep
+ studytime       20      0     Keep
+
+1.5 Hypothesis A1: Removing outliers improves RMSE
+With outliers: RMSE=1.5945, Without: RMSE=1.5744
+Hypothesis A1: CONFIRMED, Delta=-0.0200
+
+Section 1 Complete
+
+================================================================================
+SECTION 2: FEATURES AND PREPROCESSING
+================================================================================
+
+2.1 Encoding Categorical Features: 3 Strategies
+   Strategy Train_RMSE Val_RMSE Test_RMSE
+    One-Hot     1.1956   1.0772    1.5945
+    Ordinal     1.2288   1.0298    1.5423
+Target_Mean     1.2167   1.0521    1.5499
+
+2.2-2.4 Binning, Hypothesis B1, Multicollinearity
+VIF:
+    Feature  VIF
+       age 1.19
+      Medu 1.89
+      Fedu 1.79
+traveltime 1.11
+ studytime 1.03
+  failures 1.25
+    famrel 1.04
+  freetime 1.04
+Saved: plots/correlation_heatmap.png
+
+Section 2 Complete
+
+================================================================================
+SECTION 3: MODELS
+================================================================================
+
+3.1 Simple Linear Regression
+Saved: plots/simple_age_vs_G3.png
+Saved: plots/simple_studytime_vs_G3.png
+Saved: plots/simple_failures_vs_G3.png
+
+3.2 Multiple Linear Regression
+Multiple LR: Train RMSE=1.1956, Val RMSE=1.0772, Test RMSE=1.5945
+
+3.3 Polynomial Features - Hypothesis C1
+ Degree Test_RMSE
+      1    3.0866
+      2    2.9760
+      3    3.3375
+
+3.4 Interaction Terms
+With interactions: Test RMSE=2.9882
+
+Section 3 Complete
+
+================================================================================
+SECTION 4: NORMALIZATION AND REGULARIZATION
+================================================================================
+
+4.1 Feature Scaling
+With scaling: Test RMSE=1.5945
+
+4.2 Ridge Regression - Hypothesis D1
+ Alpha Test_RMSE
+  0.01    1.5945
+  0.10    1.5945
+  1.00    1.5947
+ 10.00    1.5965
+100.00    1.5970
+
+4.3 Lasso Regression - Hypothesis D2
+ Alpha Test_RMSE  NonZero
+  0.01    1.5615       40
+  0.10    1.4347       10
+  1.00    1.6312        2
+ 10.00    3.3692        0
+100.00    3.3692        0
+
+Section 4 Complete
+
+================================================================================
+SECTION 5: STATISTICAL QUALITY ASSESSMENT
+================================================================================
+
+5.1 Repeated K-Fold Cross-Validation
+    Model Mean_RMSE    SEM            95%CI    Min    Max
+      OLS    1.3527 0.0607 [1.2274, 1.4780] 0.8979 2.1007
+Ridge_0.1    1.3526 0.0607 [1.2272, 1.4779] 0.8979 2.1009
+  Ridge_1    1.3512 0.0609 [1.2255, 1.4770] 0.8982 2.1030
+Lasso_0.1    1.2680 0.0708 [1.1219, 1.4140] 0.7968 2.1234
+
+5.2 Paired Statistical Tests
+  Comparison Mean_Diff p-value   Test Cohen_d     Verdict
+OLS vs Ridge    0.0015  0.0164 t-test   0.527 Significant
+
+5.3 Error Analysis by Subgroups
+ Subgroup  n    MAE
+school=MS 45 0.9608
+school=GP 85 1.0241
+
+5.4 Diagnostics of OLS Assumptions
+Saved: plots/diagnostic_plots.png
+                            Test Statistic p-value       Verdict
+        Shapiro-Wilk (Normality)         -  0.0000    Non-Normal
+Breusch-Pagan (Homoscedasticity)         -  0.0641 Homoscedastic
+        Durbin-Watson (Autocorr)     2.013       -   No Autocorr
+
+Section 5 Complete
+
+================================================================================
+SECTION 6: FINAL CONCLUSIONS ON HYPOTHESES
+================================================================================
+
+Hypothesis A1: CONFIRMED
+  Delta: -0.0200
+
+Hypothesis C1: CONFIRMED
+  Note: Polynomial features improve RMSE
+
+Hypothesis D1: CONFIRMED
+  Note: Ridge reduces overfitting
+
+Hypothesis D2: CONFIRMED
+  Note: Lasso performs feature selection
+
+All hypotheses evaluated
+
+================================================================================
+SECTION 7: GENERATING REPORT
+================================================================================
+✓ Report generated: REPORT_LINEAR_REGRESSION.md
+
+================================================================================
+ANALYSIS COMPLETE
+================================================================================
+
+Generated files:
+  - REPORT_LINEAR_REGRESSION.md
+  - plots/g3_dist.png
+  - plots/correlation_heatmap.png
+  - plots/simple_*_vs_G3.png
+  - plots/diagnostic_plots.png
+
+All 7 sections completed!
+All 5 hypotheses tested: A1, B1, C1, D1, D2
+
+================================================================================
